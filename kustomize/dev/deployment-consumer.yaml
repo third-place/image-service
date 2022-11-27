@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: otto-image-service-consumer
-          image: ghcr.io/danielmunro/otto-image-service-consumer:v0.1.3
+          image: ghcr.io/third-place/image-service-consumer:v0.1.2
           imagePullPolicy: Always
           resources:
             limits:
