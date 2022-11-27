@@ -10,10 +10,10 @@
 package main
 
 import (
-	"github.com/danielmunro/otto-image-service/internal"
-	"github.com/danielmunro/otto-image-service/internal/middleware"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/rs/cors"
+	"github.com/third-place/image-service/internal"
+	"github.com/third-place/image-service/internal/middleware"
 	"log"
 	"net/http"
 )
