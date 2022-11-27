@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-service
+spec:
+  minReadySeconds: 3
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 60
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: image-service
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9797"
+      labels:
+        app: image-service
+    spec:
+      containers:
+      - name: otto-image-service
+        image: ghcr.io/danielmunro/otto-image-service:v0.1.3
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8082
+            name: http
+            protocol: TCP
+        env:
+          - name: POSTGRES_HOST
+            valueFrom:
+              secretKeyRef:
+                name: postgres-image
+                key: host
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-image
+                key: user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-image
+                key: password
+          - name: POSTGRES_PORT
+            valueFrom:
+              secretKeyRef:
+                name: postgres-image
+                key: port
+          - name: POSTGRES_DBNAME
+            valueFrom:
+              secretKeyRef:
+                name: postgres-image
+                key: database
+          - name: KAFKA_BOOTSTRAP_SERVERS
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: bootstrap_servers
+          - name: KAFKA_SECURITY_PROTOCOL
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: security_protocol
+          - name: KAFKA_SASL_MECHANISM
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: sasl_mechanism
+          - name: KAFKA_SASL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: sasl_username
+          - name: KAFKA_SASL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: kafka
+                key: sasl_password
+          - name: S3_REGION
+            valueFrom:
+              secretKeyRef:
+                name: image-service
+                key: s3_region
+          - name: S3_BUCKET
+            valueFrom:
+              secretKeyRef:
+                name: image-service
+                key: s3_bucket
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws
+                key: client_id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws
+                key: client_secret
+      imagePullSecrets:
+      - name: dockerconfigjson-github-com
+      - name: postgres-image
+      - name: kafka
+      - name: image-service
+      - name: aws

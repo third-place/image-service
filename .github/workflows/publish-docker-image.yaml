@@ -1,0 +1,20 @@
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  publish-docker-image:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+      - run: go vet ./...
+      - run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u danielmunro --password-stdin
+      - run: docker build -t ghcr.io/danielmunro/otto-image-service:${{ github.ref_name }} .
+      - run: docker push ghcr.io/danielmunro/otto-image-service:${{ github.ref_name }}
+      - run: mv ./cmd/kafka/main.go .
+      - run: docker build -t ghcr.io/danielmunro/otto-image-service-consumer:${{ github.ref_name }} .
+      - run: docker push ghcr.io/danielmunro/otto-image-service-consumer:${{ github.ref_name }}

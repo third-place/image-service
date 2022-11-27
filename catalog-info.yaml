@@ -1,0 +1,58 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: image-service
+  description: Otto image service
+  links:
+    - url: https://github.com/danielmunro/otto-image-service
+      title: Git Repository
+spec:
+  type: service
+  lifecycle: production
+  owner: dev-team
+  providesApis:
+    - image-service-api
+  dependsOn:
+    - api:user-service-api
+    - resource:image-service-db
+    - resource:image-service-s3
+    - resource:kafka
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: image-service-api
+  description: Otto image service API
+  links:
+    - url: https://github.com/danielmunro/otto-image-service
+      title: Git Repository
+spec:
+  type: openapi
+  lifecycle: production
+  owner: dev-team
+  definition:
+    $text: https://github.com/danielmunro/otto-image-service/blob/main/api.yaml
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: image-service-db
+  description: Otto image service DB
+spec:
+  type: database
+  lifecycle: production
+  owner: dev-team
+  dependencyOf:
+    - api:image-service
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: image-service-s3
+  description: Otto image service S3 bucket
+spec:
+  type: s3
+  lifecycle: production
+  owner: dev-team
+  dependencyOf:
+    - api:image-service

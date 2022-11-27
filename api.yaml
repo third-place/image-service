@@ -1,0 +1,263 @@
+openapi: "3.0.0"
+info:
+  title: Otto image service
+  version: "1.0"
+paths:
+  /album:
+    post:
+      operationId: createNewAlbumV1
+      summary: create a new album
+      requestBody:
+        description: album to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewAlbum"
+      responses:
+        '201':
+          description: get an album
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+  /album/{uuid}:
+    get:
+      operationId: getAlbumV1
+      summary: get an album
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: get an album
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        '404':
+          description: |-
+            404 response
+  /album/{uuid}/image:
+    post:
+      operationId: createNewImageV1
+      summary: create a new image
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: image to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewImage"
+      responses:
+        '201':
+          description: |-
+            201 response
+    get:
+      operationId: getImagesForAlbumV1
+      summary: get images for album
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: all images for the album
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Image"
+
+  /image/{uuid}:
+    get:
+      operationId: getImageV1
+      summary: get an image
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: get an image
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '404':
+          description: |-
+            404 response
+  /album/livestream:
+    post:
+      operationId: uploadNewLivestreamImageV1
+      summary: upload a new livestream image
+      responses:
+        '201':
+          description: created image
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Image"
+  /album/profile:
+    post:
+      operationId: uploadNewProfileImageV1
+      summary: upload a new profile image
+      responses:
+        '201':
+          description: created image
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Image"
+  /albums/:username:
+    get:
+      operationId: getAlbumsForUserV1
+      summary: get albums for a user
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: albums for a user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Album"
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - uuid
+        - username
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        username:
+          type: string
+        albums:
+          type: array
+          items:
+            $ref: "#/components/schemas/Album"
+    NewAlbum:
+      required:
+        - name
+        - visibility
+      properties:
+        visibility:
+          $ref: "#/components/schemas/Visibility"
+        name:
+          type: string
+        description:
+          type: string
+        link:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+    Album:
+      required:
+        - uuid
+        - created_at
+        - visibility
+        - name
+        - link
+        - album_type
+        - user
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        link:
+          type: string
+        album_type:
+          $ref: "#/components/schemas/AlbumType"
+        visibility:
+          $ref: "#/components/schemas/Visibility"
+        name:
+          type: string
+        description:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/Image"
+    NewImage:
+      type: object
+      required:
+        - filename
+      properties:
+        filename:
+          type: string
+        link:
+          type: string
+        image:
+          type: string
+    Image:
+      type: object
+      required:
+        - uuid
+        - filename
+        - s3_key
+        - created_at
+        - link
+        - album
+        - user
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        filename:
+          type: string
+        s3_key:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        link:
+          type: string
+        album:
+          $ref: "#/components/schemas/Album"
+        user:
+          $ref: "#/components/schemas/User"
+    AlbumType:
+      type: string
+      enum:
+        - profile_pics
+        - user_created
+    Visibility:
+      type: string
+      enum:
+        - private
+        - friends
+        - public
