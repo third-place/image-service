@@ -2,9 +2,9 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: image-service
-  description: Otto image service
+  description: Third place image service
   links:
-    - url: https://github.com/danielmunro/otto-image-service
+    - url: https://github.com/third-place/image-service
       title: Git Repository
 spec:
   type: service
@@ -22,16 +22,16 @@ apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: image-service-api
-  description: Otto image service API
+  description: Third place image service API
   links:
-    - url: https://github.com/danielmunro/otto-image-service
+    - url: https://github.com/third-place/image-service
       title: Git Repository
 spec:
   type: openapi
   lifecycle: production
   owner: dev-team
   definition:
-    $text: https://github.com/danielmunro/otto-image-service/blob/main/api.yaml
+    $text: https://github.com/third-place/image-service/blob/main/api.yaml
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource
