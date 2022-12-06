@@ -15,10 +15,6 @@ jobs:
       # build the service docker image
       - run: docker build -t ghcr.io/${{ github.repository }}:${{ github.ref_name }} .
       - run: docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
-      # build the kafka consumer docker image
-      - run: mv ./cmd/kafka/main.go .
-      - run: docker build -t ghcr.io/${{ github.repository }}-consumer:${{ github.ref_name }} .
-      - run: docker push ghcr.io/${{ github.repository }}-consumer:${{ github.ref_name }}
   deploy-to-dev:
     runs-on: ubuntu-latest
     needs: publish-docker-image
@@ -27,7 +23,6 @@ jobs:
         with:
           ref: main
       - run: sudo snap install yq
-      - run: yq -i '.spec.template.spec.containers[0].image = "ghcr.io/${{ github.repository }}-consumer:${{ github.ref_name }}"' kustomize/dev/deployment-consumer.yaml
       - run: yq -i '.spec.template.spec.containers[0].image = "ghcr.io/${{ github.repository }}:${{ github.ref_name }}"' kustomize/dev/deployment-service.yaml
       - uses: EndBug/add-and-commit@v9
         with:

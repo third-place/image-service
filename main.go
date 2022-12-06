@@ -13,14 +13,23 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/rs/cors"
 	"github.com/third-place/image-service/internal"
+	"github.com/third-place/image-service/internal/kafka"
 	"github.com/third-place/image-service/internal/middleware"
 	"log"
 	"net/http"
 )
 
 func main() {
+	go readKafka()
 	serveHttp()
 }
+
+func readKafka() {
+	log.Print("connecting to kafka")
+	kafka.InitializeAndRunLoop()
+	log.Print("exit kafka loop")
+}
+
 func serveHttp() {
 	router := internal.NewRouter()
 	handler := cors.AllowAll().Handler(router)
