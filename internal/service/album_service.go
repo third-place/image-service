@@ -1,11 +1,11 @@
 package service
 
 import (
+	"github.com/google/uuid"
 	"github.com/third-place/image-service/internal/db"
 	"github.com/third-place/image-service/internal/mapper"
 	"github.com/third-place/image-service/internal/model"
 	"github.com/third-place/image-service/internal/repository"
-	"github.com/google/uuid"
 	"log"
 )
 

@@ -2,10 +2,10 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/third-place/image-service/internal/auth/model"
-	"github.com/third-place/image-service/internal/service"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/third-place/image-service/internal/service"
+	"github.com/third-place/image-service/internal/util"
 	"net/http"
 )
 
@@ -13,47 +13,81 @@ import (
 func CreateNewImageV1(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	albumUuid := uuid.MustParse(params["uuid"])
-	service.CreateDefaultAuthService().DoWithValidSession(w, r, func(session *model.Session) (interface{}, error) {
-		tempFile, fileHeader, err := r.FormFile("image")
-		if err != nil {
-			return nil, err
-		}
-		return service.CreateDefaultImageService().CreateNewImageForAlbum(
-			uuid.MustParse(session.User.Uuid),
-			albumUuid,
-			tempFile,
-			fileHeader.Filename,
-			fileHeader.Size,
-		)
-	})
+	session, err := util.GetSession(r.Header.Get("x-session-token"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+	tempFile, fileHeader, err := r.FormFile("image")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	album, err := service.CreateDefaultImageService().CreateNewImageForAlbum(
+		uuid.MustParse(session.User.Uuid),
+		albumUuid,
+		tempFile,
+		fileHeader.Filename,
+		fileHeader.Size,
+	)
+	data, err := json.Marshal(album)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	_, _ = w.Write(data)
 }
 
 // UploadNewLivestreamImageV1 - upload a new image
 func UploadNewLivestreamImageV1(w http.ResponseWriter, r *http.Request) {
-	service.CreateDefaultAuthService().DoWithValidSession(w, r, func(session *model.Session) (interface{}, error) {
-		tempFile, fileHeader, err := r.FormFile("image")
-		if err != nil {
-			return nil, err
-		}
-		return service.CreateDefaultImageService().CreateNewLivestreamImage(
-			uuid.MustParse(session.User.Uuid),
-			tempFile,
-			fileHeader.Filename,
-			fileHeader.Size,
-		)
-	})
+	session, err := util.GetSession(r.Header.Get("x-session-token"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+	tempFile, fileHeader, err := r.FormFile("image")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	image, err := service.CreateDefaultImageService().CreateNewLivestreamImage(
+		uuid.MustParse(session.User.Uuid),
+		tempFile,
+		fileHeader.Filename,
+		fileHeader.Size,
+	)
+	data, err := json.Marshal(image)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	_, _ = w.Write(data)
 }
 
 // UploadNewProfileImageV1 - upload a new profile pic
 func UploadNewProfileImageV1(w http.ResponseWriter, r *http.Request) {
-	service.CreateDefaultAuthService().DoWithValidSession(w, r, func(session *model.Session) (interface{}, error) {
-		tempFile, fileHeader, err := r.FormFile("image")
-		if err != nil {
-			return nil, err
-		}
-		return service.CreateDefaultImageService().
-			CreateNewProfileImage(uuid.MustParse(session.User.Uuid), tempFile, fileHeader.Filename, fileHeader.Size)
-	})
+	session, err := util.GetSession(r.Header.Get("x-session-token"))
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+	tempFile, fileHeader, err := r.FormFile("image")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	image, err := service.CreateDefaultImageService().
+		CreateNewProfileImage(uuid.MustParse(session.User.Uuid), tempFile, fileHeader.Filename, fileHeader.Size)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	data, err := json.Marshal(image)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	_, _ = w.Write(data)
 }
 
 // GetImageV1 - get an image

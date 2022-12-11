@@ -97,9 +97,15 @@ spec:
                 secretKeyRef:
                   name: aws
                   key: client_secret
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: user-service
+                  key: jwt_key
       imagePullSecrets:
         - name: dockerconfigjson-github-com
         - name: postgres-image
         - name: kafka
         - name: image-service
         - name: aws
+        - name: user-service

@@ -9,9 +9,8 @@
 
 package model
 
-// Email struct for Email
-type Email struct {
-	User           User           `json:"user"`
-	Email          string         `json:"email"`
-	VerifiedStatus VerifiedStatus `json:"verifiedStatus"`
+// Session struct for Session
+type Session struct {
+	User  User   `json:"user"`
+	Token string `json:"token,omitempty"`
 }
