@@ -3,10 +3,15 @@ package kafka
 import (
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"log"
 	"os"
 )
 
-func CreateProducer() *kafka.Producer {
+type Producer interface {
+	Produce(msg *kafka.Message, deliveryChan chan kafka.Event) error
+}
+
+func CreateProducer() Producer {
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
 		"security.protocol": os.Getenv("KAFKA_SECURITY_PROTOCOL"),
@@ -15,7 +20,15 @@ func CreateProducer() *kafka.Producer {
 		"sasl.password":     os.Getenv("KAFKA_SASL_PASSWORD"),
 	})
 	if err != nil {
-		panic(fmt.Sprintf("Failed to create producer: %s", err))
+		log.Fatal(fmt.Sprintf("Failed to create producer: %s", err))
 	}
 	return producer
+}
+
+func CreateMessage(data []byte, topic string) *kafka.Message {
+	return &kafka.Message{
+		Value: data,
+		TopicPartition: kafka.TopicPartition{Topic: &topic,
+			Partition: kafka.PartitionAny},
+	}
 }

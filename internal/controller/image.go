@@ -23,7 +23,7 @@ func CreateNewImageV1(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	album, err := service.CreateDefaultImageService().CreateNewImageForAlbum(
+	album, err := service.CreateImageService().CreateNewImageForAlbum(
 		uuid.MustParse(session.User.Uuid),
 		albumUuid,
 		tempFile,
@@ -50,7 +50,7 @@ func UploadNewLivestreamImageV1(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	image, err := service.CreateDefaultImageService().CreateNewLivestreamImage(
+	image, err := service.CreateImageService().CreateNewLivestreamImage(
 		uuid.MustParse(session.User.Uuid),
 		tempFile,
 		fileHeader.Filename,
@@ -76,7 +76,7 @@ func UploadNewProfileImageV1(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	image, err := service.CreateDefaultImageService().
+	image, err := service.CreateImageService().
 		CreateNewProfileImage(uuid.MustParse(session.User.Uuid), tempFile, fileHeader.Filename, fileHeader.Size)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -94,7 +94,7 @@ func UploadNewProfileImageV1(w http.ResponseWriter, r *http.Request) {
 func GetImageV1(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uuidParam := uuid.MustParse(params["uuid"])
-	imageModel, err := service.CreateDefaultImageService().GetImage(uuidParam)
+	imageModel, err := service.CreateImageService().GetImage(uuidParam)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -108,7 +108,7 @@ func GetImagesForAlbumV1(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uuidParam := params["uuid"]
 
-	imageModels := service.CreateDefaultImageService().GetAllImagesForAlbum(uuid.MustParse(uuidParam))
+	imageModels := service.CreateImageService().GetAllImagesForAlbum(uuid.MustParse(uuidParam))
 	data, _ := json.Marshal(imageModels)
 	_, _ = w.Write(data)
 
