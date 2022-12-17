@@ -1,7 +1,7 @@
 on:
   push:
-    branches:
-      - '*'
+    paths:
+      - '**.go'
 jobs:
   run-go-tests:
     runs-on: ubuntu-latest
