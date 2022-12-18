@@ -17,19 +17,15 @@ type UploadService struct {
 	bucket   string
 }
 
-func CreateUploadService(s3Client *s3.S3, bucket string) *UploadService {
-	return &UploadService{
-		s3Client,
-		bucket,
-	}
-}
-
 func CreateDefaultUploadService() *UploadService {
 	s, err := session.NewSession(&aws.Config{Region: aws.String(os.Getenv("S3_REGION"))})
 	if err != nil {
 		log.Fatal(err)
 	}
-	return CreateUploadService(s3.New(s), os.Getenv("S3_BUCKET"))
+	return &UploadService{
+		s3.New(s),
+		os.Getenv("S3_BUCKET"),
+	}
 }
 
 func (u *UploadService) UploadImage(file multipart.File, filename string, filesize int64) (s3Key string, err error) {
