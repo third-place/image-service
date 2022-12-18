@@ -19,7 +19,7 @@ type ImageService struct {
 	imageRepository *repository.ImageRepository
 	albumRepository *repository.AlbumRepository
 	userRepository  *repository.UserRepository
-	uploadService   *UploadService
+	uploadService   UploadService
 	kafkaProducer   kafka.Producer
 }
 
@@ -29,7 +29,7 @@ func CreateImageService() *ImageService {
 		repository.CreateImageRepository(conn),
 		repository.CreateAlbumRepository(conn),
 		repository.CreateUserRepository(conn),
-		CreateUploadService(),
+		CreateS3UploadService(),
 		kafka.CreateProducer(),
 	}
 }
@@ -44,7 +44,7 @@ func CreateTestImageService() *ImageService {
 		repository.CreateImageRepository(conn),
 		repository.CreateAlbumRepository(conn),
 		repository.CreateUserRepository(conn),
-		CreateUploadService(),
+		CreateTestUploadService(),
 		producer,
 	}
 }

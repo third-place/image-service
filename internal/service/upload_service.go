@@ -12,30 +12,44 @@ import (
 	"path/filepath"
 )
 
-type UploadService struct {
+type UploadService interface {
+	UploadImage(file multipart.File, filename string, filesize int64) (key string, err error)
+}
+
+type TestUploadService struct{}
+
+func CreateTestUploadService() UploadService {
+	return &TestUploadService{}
+}
+
+func (t *TestUploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, err error) {
+	return uuid.New().String(), nil
+}
+
+type S3UploadService struct {
 	s3Client *s3.S3
 	bucket   string
 }
 
-func CreateUploadService() *UploadService {
+func CreateS3UploadService() *S3UploadService {
 	s, err := session.NewSession(&aws.Config{Region: aws.String(os.Getenv("S3_REGION"))})
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &UploadService{
+	return &S3UploadService{
 		s3.New(s),
 		os.Getenv("S3_BUCKET"),
 	}
 }
 
-func (u *UploadService) UploadImage(file multipart.File, filename string, filesize int64) (s3Key string, err error) {
+func (u *S3UploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, err error) {
 	log.Print("upload image to s3 :: ", filename)
 	buffer := make([]byte, filesize)
 	file.Read(buffer)
-	s3Key = uuid.New().String() + filepath.Ext(filename)
+	key = uuid.New().String() + filepath.Ext(filename)
 	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(u.bucket),
-		Key:                  aws.String(s3Key),
+		Key:                  aws.String(key),
 		ACL:                  aws.String("public-read"),
 		Body:                 bytes.NewReader(buffer),
 		ContentLength:        aws.Int64(filesize),
