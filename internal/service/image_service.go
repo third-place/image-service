@@ -29,7 +29,7 @@ func CreateImageService() *ImageService {
 		repository.CreateImageRepository(conn),
 		repository.CreateAlbumRepository(conn),
 		repository.CreateUserRepository(conn),
-		CreateDefaultUploadService(),
+		CreateUploadService(),
 		kafka.CreateProducer(),
 	}
 }
@@ -44,7 +44,7 @@ func CreateTestImageService() *ImageService {
 		repository.CreateImageRepository(conn),
 		repository.CreateAlbumRepository(conn),
 		repository.CreateUserRepository(conn),
-		CreateDefaultUploadService(),
+		CreateUploadService(),
 		producer,
 	}
 }

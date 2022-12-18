@@ -17,7 +17,7 @@ type UploadService struct {
 	bucket   string
 }
 
-func CreateDefaultUploadService() *UploadService {
+func CreateUploadService() *UploadService {
 	s, err := session.NewSession(&aws.Config{Region: aws.String(os.Getenv("S3_REGION"))})
 	if err != nil {
 		log.Fatal(err)
