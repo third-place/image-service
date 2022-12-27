@@ -1,56 +1,48 @@
 package controller
 
 import (
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"github.com/third-place/image-service/internal/model"
 	"github.com/third-place/image-service/internal/service"
 	"github.com/third-place/image-service/internal/util"
-	"log"
 	"net/http"
 )
 
 // CreateNewAlbumV1 - create a new album
-func CreateNewAlbumV1(w http.ResponseWriter, r *http.Request) {
-	newAlbum := model.DecodeRequestToNewAlbum(r)
-	session, err := util.GetSession(r.Header.Get("x-session-token"))
+func CreateNewAlbumV1(c *gin.Context) {
+	newAlbum := model.DecodeRequestToNewAlbum(c.Request)
+	session, err := util.GetSession(c)
 	if err != nil {
-		w.WriteHeader(http.StatusForbidden)
+		c.Status(http.StatusForbidden)
 		return
 	}
 	album := service.CreateDefaultAlbumService().CreateAlbum(uuid.MustParse(session.User.Uuid), newAlbum)
-	data, err := json.Marshal(album)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	_, _ = w.Write(data)
+	c.JSON(http.StatusOK, album)
 }
 
 // GetAlbumV1 - create a new album
-func GetAlbumV1(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	uuidParam := params["uuid"]
-	album, err := service.CreateDefaultAlbumService().GetAlbum(uuid.MustParse(uuidParam))
+func GetAlbumV1(c *gin.Context) {
+	uuidParam, err := uuid.Parse(c.Param("uuid"))
 	if err != nil {
-		log.Print("error received from GetAlbumV1 :: ", err)
-		w.WriteHeader(http.StatusBadRequest)
+		c.Status(http.StatusBadRequest)
 		return
 	}
-	data, _ := json.Marshal(album)
-	_, _ = w.Write(data)
+	album, err := service.CreateDefaultAlbumService().GetAlbum(uuidParam)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	c.JSON(http.StatusOK, album)
 }
 
 // GetAlbumsForUserV1 - create a new album
-func GetAlbumsForUserV1(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	username := params["username"]
+func GetAlbumsForUserV1(c *gin.Context) {
+	username := c.Param("username")
 	albums, err := service.CreateDefaultAlbumService().GetAlbumsForUser(username)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		c.Status(http.StatusBadRequest)
 		return
 	}
-	data, _ := json.Marshal(albums)
-	_, _ = w.Write(data)
+	c.JSON(http.StatusOK, albums)
 }

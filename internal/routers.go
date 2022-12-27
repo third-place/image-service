@@ -10,104 +10,113 @@
 package internal
 
 import (
-	"fmt"
 	"github.com/third-place/image-service/internal/controller"
 	"net/http"
-	"strings"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
+// Route is the information for every URI.
 type Route struct {
-	Name        string
-	Method      string
-	Pattern     string
-	HandlerFunc http.HandlerFunc
+	// Name is the name of this Route.
+	Name string
+	// Method is the string for the HTTP method. ex) GET, POST etc..
+	Method string
+	// Pattern is the pattern of the URI.
+	Pattern string
+	// HandlerFunc is the handler function of this route.
+	HandlerFunc gin.HandlerFunc
 }
 
+// Routes is the list of the generated Route.
 type Routes []Route
 
-func NewRouter() *mux.Router {
-	router := mux.NewRouter().StrictSlash(true)
+// NewRouter returns a new router.
+func NewRouter() *gin.Engine {
+	router := gin.Default()
 	for _, route := range routes {
-		var handler http.Handler
-		handler = route.HandlerFunc
-		handler = Logger(handler, route.Name)
-
-		router.
-			Methods(route.Method).
-			Path(route.Pattern).
-			Name(route.Name).
-			Handler(handler)
+		switch route.Method {
+		case http.MethodGet:
+			router.GET(route.Pattern, route.HandlerFunc)
+		case http.MethodPost:
+			router.POST(route.Pattern, route.HandlerFunc)
+		case http.MethodPut:
+			router.PUT(route.Pattern, route.HandlerFunc)
+		case http.MethodPatch:
+			router.PATCH(route.Pattern, route.HandlerFunc)
+		case http.MethodDelete:
+			router.DELETE(route.Pattern, route.HandlerFunc)
+		}
 	}
 
 	return router
 }
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World!")
+// Index is the index handler.
+func Index(c *gin.Context) {
+	c.String(http.StatusOK, "Hello World!")
 }
 
 var routes = Routes{
 	{
 		"Index",
-		"GET",
+		http.MethodGet,
 		"/",
 		Index,
 	},
 
 	{
 		"CreateNewAlbumV1",
-		strings.ToUpper("Post"),
+		http.MethodPost,
 		"/album",
 		controller.CreateNewAlbumV1,
 	},
 
 	{
 		"CreateNewImageV1",
-		strings.ToUpper("Post"),
-		"/album/{uuid}/image",
+		http.MethodPost,
+		"/album/:uuid/image",
 		controller.CreateNewImageV1,
 	},
 
 	{
 		"GetAlbumV1",
-		strings.ToUpper("Get"),
-		"/album/{uuid}",
+		http.MethodGet,
+		"/album/:uuid",
 		controller.GetAlbumV1,
 	},
 
 	{
 		"GetAlbumsForUserV1",
-		strings.ToUpper("Get"),
+		http.MethodGet,
 		"/albums/:username",
 		controller.GetAlbumsForUserV1,
 	},
 
 	{
 		"GetImageV1",
-		strings.ToUpper("Get"),
-		"/image/{uuid}",
+		http.MethodGet,
+		"/image/:uuid",
 		controller.GetImageV1,
 	},
 
 	{
 		"GetImagesForAlbumV1",
-		strings.ToUpper("Get"),
-		"/album/{uuid}/image",
+		http.MethodGet,
+		"/album/:uuid/image",
 		controller.GetImagesForAlbumV1,
 	},
 
 	{
 		"UploadNewLivestreamImageV1",
-		strings.ToUpper("Post"),
+		http.MethodPost,
 		"/album/livestream",
 		controller.UploadNewLivestreamImageV1,
 	},
 
 	{
 		"UploadNewProfileImageV1",
-		strings.ToUpper("Post"),
+		http.MethodPost,
 		"/album/profile",
 		controller.UploadNewProfileImageV1,
 	},
