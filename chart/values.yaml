@@ -21,7 +21,7 @@ service:
     KAFKA_SASL_USERNAME:
     KAFKA_SASL_PASSWORD:
 
-    POSTGRES_HOST: image-service-postgresql.user-service.svc.cluster.local
+    POSTGRES_HOST: image-service-postgresql.image-service.svc.cluster.local
     POSTGRES_PORT: 5432
     POSTGRES_DBNAME: image_service
     POSTGRES_USER: service_user
