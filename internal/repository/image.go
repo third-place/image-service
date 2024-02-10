@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"github.com/third-place/image-service/internal/entity"
 	"github.com/google/uuid"
-	"github.com/jinzhu/gorm"
+	"github.com/third-place/image-service/internal/entity"
+	"gorm.io/gorm"
 )
 
 type ImageRepository struct {

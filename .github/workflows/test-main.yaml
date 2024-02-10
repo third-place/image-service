@@ -1,7 +1,0 @@
-on:
-  push:
-    paths:
-      - '**.go'
-jobs:
-  run-go-tests:
-    uses: third-place/actions/.github/workflows/run-go-tests.yaml@main

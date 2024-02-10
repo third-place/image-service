@@ -2,10 +2,10 @@ package repository
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"github.com/third-place/image-service/internal/entity"
 	"github.com/third-place/image-service/internal/model"
-	"github.com/google/uuid"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"log"
 )
 
