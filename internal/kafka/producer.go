@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
-	"os"
 )
 
 type Producer interface {
@@ -12,13 +11,10 @@ type Producer interface {
 }
 
 func CreateProducer() Producer {
-	producer, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
-		"security.protocol": os.Getenv("KAFKA_SECURITY_PROTOCOL"),
-		"sasl.mechanisms":   os.Getenv("KAFKA_SASL_MECHANISM"),
-		"sasl.username":     os.Getenv("KAFKA_SASL_USERNAME"),
-		"sasl.password":     os.Getenv("KAFKA_SASL_PASSWORD"),
-	})
+	cfg := createConnectionConfig()
+	_ = cfg.SetKey("group.id", "user-service")
+	_ = cfg.SetKey("auto.offset.reset", "earliest")
+	producer, err := kafka.NewProducer(createConnectionConfig())
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Failed to create producer: %s", err))
 	}
