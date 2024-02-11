@@ -7,7 +7,7 @@ import (
 
 func GetReader() *kafka.Consumer {
 	cfg := createConnectionConfig()
-	_ = cfg.SetKey("group.id", "user-service")
+	_ = cfg.SetKey("group.id", "image-service")
 	_ = cfg.SetKey("auto.offset.reset", "earliest")
 	c, err := kafka.NewConsumer(cfg)
 
