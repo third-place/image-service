@@ -2,7 +2,7 @@ package entity
 
 import (
 	"github.com/google/uuid"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Album struct {
@@ -15,5 +15,5 @@ type Album struct {
 	UserID      uint
 	Images      []*Image
 	Visibility  string
-	Uuid *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	Uuid        *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 }
