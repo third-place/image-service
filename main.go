@@ -10,6 +10,7 @@
 package main
 
 import (
+	"fmt"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/rs/cors"
 	"github.com/third-place/image-service/internal"
@@ -17,6 +18,8 @@ import (
 	"github.com/third-place/image-service/internal/service"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 func main() {
@@ -31,10 +34,19 @@ func readKafka() {
 	log.Print("exit kafka loop")
 }
 
+func getServicePort() int {
+	servicePort, err := strconv.Atoi(os.Getenv("SERVICE_PORT"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return servicePort
+}
+
 func serveHttp() {
 	router := internal.NewRouter()
 	handler := cors.AllowAll().Handler(router)
-	log.Print("listening on 8082")
-	log.Fatal(http.ListenAndServe(":8082",
+	port := getServicePort()
+	log.Printf("listening on %d", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port),
 		middleware.FileSizeLimit(middleware.ContentTypeMiddleware(handler))))
 }
