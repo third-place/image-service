@@ -2,10 +2,12 @@ package service
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/uuid"
+	"io"
 	"log"
 	"mime/multipart"
 	"os"
@@ -24,6 +26,30 @@ func CreateTestUploadService() UploadService {
 
 func (t *TestUploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, err error) {
 	return uuid.New().String(), nil
+}
+
+type LocalFSUploadService struct {
+	dir string
+}
+
+func CreateLocalFSUploadService() UploadService {
+	return &LocalFSUploadService{
+		dir: os.Getenv("IMAGE_DIR"),
+	}
+}
+
+func (l *LocalFSUploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, err error) {
+	key = uuid.New().String() + filepath.Ext(filename)
+	fullPath := fmt.Sprintf("%s/%s", l.dir, key)
+	dst, err := os.Create(fullPath)
+	if err != nil {
+		log.Println("error creating file", err)
+		return
+	}
+	if _, err := io.Copy(dst, file); err != nil {
+		return
+	}
+	return
 }
 
 type S3UploadService struct {

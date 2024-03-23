@@ -29,7 +29,7 @@ func CreateImageService() *ImageService {
 		repository.CreateImageRepository(conn),
 		repository.CreateAlbumRepository(conn),
 		repository.CreateUserRepository(conn),
-		CreateS3UploadService(),
+		CreateLocalFSUploadService(),
 		kafka.CreateProducer(),
 	}
 }
