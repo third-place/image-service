@@ -46,9 +46,7 @@ func (l *LocalFSUploadService) UploadImage(file multipart.File, filename string,
 		log.Println("error creating file", err)
 		return
 	}
-	if _, err := io.Copy(dst, file); err != nil {
-		return
-	}
+	_, err = io.Copy(dst, file)
 	return
 }
 
