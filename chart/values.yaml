@@ -22,7 +22,7 @@ service:
 
     POSTGRES_HOST: image-service-postgres.image-service.svc.cluster.local
     POSTGRES_PORT: 5432
-    POSTGRES_DBNAME: image_service
+    POSTGRES_DB: image_service
     POSTGRES_USER: service_user
 
     IMAGE_DIR: /var/images
