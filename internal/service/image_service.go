@@ -106,13 +106,14 @@ func (i *ImageService) GetImage(imageUuid uuid.UUID) (*model.Image, error) {
 }
 
 func (i *ImageService) uploadAndCreateImageEntity(user *entity.User, album *entity.Album, file multipart.File, filename string, filesize int64) *entity.Image {
-	s3Key, err := i.uploadService.UploadImage(file, filename, filesize)
+	key, contentType, err := i.uploadService.UploadImage(file, filename, filesize)
 	if err != nil {
 		log.Print("error occurred in image service upload", err)
 		return nil
 	}
 	imageEntity := i.createNewImageEntity(user, album)
-	imageEntity.S3Key = s3Key
+	imageEntity.Key = key
+	imageEntity.ContentType = contentType.String()
 	i.imageRepository.Create(imageEntity)
 	return imageEntity
 }

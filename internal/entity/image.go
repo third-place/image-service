@@ -7,12 +7,13 @@ import (
 
 type Image struct {
 	gorm.Model
-	Link     string
-	Filename string
-	S3Key    string
-	User     *User
-	UserID   uint
-	Album    *Album
-	AlbumID  uint
-	Uuid     *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	Link        string
+	Filename    string
+	Key         string
+	ContentType string
+	User        *User
+	UserID      uint
+	Album       *Album
+	AlbumID     uint
+	Uuid        *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 }

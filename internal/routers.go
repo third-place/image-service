@@ -94,6 +94,13 @@ var routes = Routes{
 	},
 
 	{
+		"GetAssetV1",
+		http.MethodGet,
+		"/asset/:uuid",
+		controller.GetAssetV1,
+	},
+
+	{
 		"GetImageV1",
 		http.MethodGet,
 		"/image/:uuid",

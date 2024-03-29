@@ -3,9 +3,11 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/third-place/image-service/internal/model"
 	"github.com/third-place/image-service/internal/service"
 	"github.com/third-place/image-service/internal/util"
 	"net/http"
+	"os"
 )
 
 // CreateNewImageV1 - create a new image
@@ -79,6 +81,29 @@ func UploadNewProfileImageV1(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, image)
+}
+
+// GetAssetV1 - get the image binary
+func GetAssetV1(c *gin.Context) {
+	uuidParam, err := uuid.Parse(c.Param("uuid"))
+	imageModel, err := service.CreateImageService().GetImage(uuidParam)
+	if err != nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+	if imageModel.Album.Visibility != model.PUBLIC {
+		session, err := util.GetSession(c)
+		if err != nil {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+		if session.User.Uuid != imageModel.User.Uuid {
+			c.Status(http.StatusForbidden)
+			return
+		}
+	}
+	r := gin.Default()
+	r.Static("/asset", os.Getenv("IMAGE_DIR"))
 }
 
 // GetImageV1 - get an image

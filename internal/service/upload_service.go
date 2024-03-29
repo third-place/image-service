@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
 	"io"
 	"log"
@@ -15,7 +16,7 @@ import (
 )
 
 type UploadService interface {
-	UploadImage(file multipart.File, filename string, filesize int64) (key string, err error)
+	UploadImage(file multipart.File, filename string, filesize int64) (key string, contentType *mimetype.MIME, err error)
 }
 
 type TestUploadService struct{}
@@ -24,8 +25,8 @@ func CreateTestUploadService() UploadService {
 	return &TestUploadService{}
 }
 
-func (t *TestUploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, err error) {
-	return uuid.New().String(), nil
+func (t *TestUploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, contentType *mimetype.MIME, err error) {
+	return uuid.New().String(), &mimetype.MIME{}, nil
 }
 
 type LocalFSUploadService struct {
@@ -38,12 +39,16 @@ func CreateLocalFSUploadService() UploadService {
 	}
 }
 
-func (l *LocalFSUploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, err error) {
+func (l *LocalFSUploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, contentType *mimetype.MIME, err error) {
 	key = uuid.New().String() + filepath.Ext(filename)
 	fullPath := fmt.Sprintf("%s/%s", l.dir, key)
 	dst, err := os.Create(fullPath)
 	if err != nil {
 		log.Println("error creating file", err)
+		return
+	}
+	contentType, err = mimetype.DetectReader(file)
+	if err != nil {
 		return
 	}
 	_, err = io.Copy(dst, file)
@@ -66,10 +71,17 @@ func CreateS3UploadService() *S3UploadService {
 	}
 }
 
-func (u *S3UploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, err error) {
+func (u *S3UploadService) UploadImage(file multipart.File, filename string, filesize int64) (key string, contentType *mimetype.MIME, err error) {
 	log.Print("upload image to s3 :: ", filename)
 	buffer := make([]byte, filesize)
-	file.Read(buffer)
+	_, err = file.Read(buffer)
+	if err != nil {
+		return
+	}
+	contentType, err = mimetype.DetectReader(file)
+	if err != nil {
+		return
+	}
 	key = uuid.New().String() + filepath.Ext(filename)
 	_, err = u.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(u.bucket),
@@ -77,22 +89,11 @@ func (u *S3UploadService) UploadImage(file multipart.File, filename string, file
 		ACL:                  aws.String("public-read"),
 		Body:                 bytes.NewReader(buffer),
 		ContentLength:        aws.Int64(filesize),
-		ContentType:          aws.String(getContentType(filename)),
+		ContentType:          aws.String(contentType.String()),
 		ServerSideEncryption: aws.String("AES256"),
 	})
 	if err != nil {
 		log.Print(err)
 	}
 	return
-}
-
-func getContentType(file string) string {
-	ext := filepath.Ext(file)
-	if ext == ".png" {
-		return "image/png"
-	} else if ext == ".jpg" || ext == ".jpeg" {
-		return "image/jpeg"
-	} else {
-		return "application/octet-stream"
-	}
 }

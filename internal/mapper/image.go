@@ -13,7 +13,7 @@ func GetImageModelFromEntity(image *entity.Image) *model.Image {
 	return &model.Image{
 		Uuid:      image.Uuid.String(),
 		Link:      image.Link,
-		S3Key:     image.S3Key,
+		Key:       image.Key,
 		CreatedAt: image.CreatedAt,
 		User:      userModel,
 	}

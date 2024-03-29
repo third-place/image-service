@@ -82,11 +82,31 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Image"
-
   /image/{uuid}:
     get:
       operationId: getImageV1
       summary: get an image
+      parameters:
+        - in: path
+          name: uuid
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: get an image
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '404':
+          description: |-
+            404 response
+  /asset/{uuid}:
+    get:
+      operationId: getAssetV1
+      summary: get an asset
       parameters:
         - in: path
           name: uuid

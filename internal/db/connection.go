@@ -16,7 +16,7 @@ func CreateDefaultConnection() *gorm.DB {
 	return CreateConnection(
 		os.Getenv("POSTGRES_HOST"),
 		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_DBNAME"),
+		os.Getenv("POSTGRES_DB"),
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"))
 }
