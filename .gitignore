@@ -18,3 +18,5 @@ charts/
 build/
 .idea/
 .env
+
+postgres-data/
