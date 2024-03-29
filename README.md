@@ -1,4 +1,4 @@
-# otto-image-service
+# Image Service
 
 ## Todo
 * Associate uploaded profile pics with album
