@@ -10,13 +10,20 @@ func GetImageModelFromEntity(image *entity.Image) *model.Image {
 	if image.User != nil {
 		userModel = GetUserModelFromEntity(image.User)
 	}
-	return &model.Image{
+	imageModel := &model.Image{
 		Uuid:      image.Uuid.String(),
 		Link:      image.Link,
 		Key:       image.Key,
 		CreatedAt: image.CreatedAt,
 		User:      userModel,
 	}
+	if image.Album != nil {
+		imageModel.Album = model.Album{
+			Uuid:       image.Album.Uuid.String(),
+			Visibility: model.Visibility(image.Album.Visibility),
+		}
+	}
+	return imageModel
 }
 
 func GetImageModelsFromEntities(images []*entity.Image) []*model.Image {

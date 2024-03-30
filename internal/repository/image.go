@@ -34,6 +34,7 @@ func (i *ImageRepository) FindByUuid(imageUuid *uuid.UUID) *entity.Image {
 func (i *ImageRepository) FindByKey(key string) *entity.Image {
 	image := &entity.Image{}
 	i.conn.Preload("User").
+		Preload("Album").
 		Table("images").
 		Where("key = ?", key).
 		First(&image)

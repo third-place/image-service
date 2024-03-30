@@ -107,7 +107,6 @@ func GetAssetV1(c *gin.Context) {
 			return
 		}
 	}
-	log.Print("serving static content")
 	r := gin.Default()
 	r.Static("/asset", os.Getenv("IMAGE_DIR"))
 }
