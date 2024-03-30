@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/third-place/image-service/internal/model"
@@ -116,6 +117,7 @@ func GetImageV1(c *gin.Context) {
 	uuidParam, err := uuid.Parse(c.Param("uuid"))
 	imageModel, err := service.CreateImageService().GetImage(uuidParam)
 	if err != nil {
+		log.Print(fmt.Sprintf("image not found -- %s", uuidParam))
 		c.Status(http.StatusNotFound)
 		return
 	}
