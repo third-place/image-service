@@ -87,7 +87,9 @@ func UploadNewProfileImageV1(c *gin.Context) {
 
 // GetAssetV1 - get the image binary
 func GetAssetV1(c *gin.Context) {
+	log.Print("GetAssetV1")
 	keyParam := c.Param("key")
+	log.Print(keyParam)
 	imageModel, err := service.CreateImageService().GetImageFromKey(keyParam)
 	if err != nil {
 		log.Print("image model not found")
@@ -107,19 +109,24 @@ func GetAssetV1(c *gin.Context) {
 			return
 		}
 	}
+	log.Print("serving static asset")
 	r := gin.Default()
 	r.Static("/asset", os.Getenv("IMAGE_DIR"))
 }
 
 // GetImageV1 - get an image
 func GetImageV1(c *gin.Context) {
+	log.Print("GetImageV1")
 	uuidParam, err := uuid.Parse(c.Param("uuid"))
+	log.Print(uuidParam.String())
 	imageModel, err := service.CreateImageService().GetImage(uuidParam)
+	log.Print(imageModel.Uuid)
 	if err != nil {
 		log.Print(fmt.Sprintf("image not found -- %s", uuidParam))
 		c.Status(http.StatusNotFound)
 		return
 	}
+	log.Print("ok!")
 	c.JSON(http.StatusOK, imageModel)
 }
 
