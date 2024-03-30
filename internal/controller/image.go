@@ -110,8 +110,11 @@ func GetAssetV1(c *gin.Context) {
 		}
 	}
 	log.Print("serving static asset")
-	r := gin.Default()
-	r.Static("/asset", os.Getenv("IMAGE_DIR"))
+	file := fmt.Sprintf("%s/%s", os.Getenv("IMAGE_DIR"), imageModel.Key)
+	stream, _ := os.Open(file)
+	finfo, _ := os.Stat(file)
+	c.Writer.Header().Set("Content-Type", imageModel.ContentType)
+	c.DataFromReader(http.StatusOK, finfo.Size(), imageModel.ContentType, stream, map[string]string{})
 }
 
 // GetImageV1 - get an image

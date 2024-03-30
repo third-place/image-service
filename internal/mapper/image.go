@@ -11,11 +11,12 @@ func GetImageModelFromEntity(image *entity.Image) *model.Image {
 		userModel = GetUserModelFromEntity(image.User)
 	}
 	imageModel := &model.Image{
-		Uuid:      image.Uuid.String(),
-		Link:      image.Link,
-		Key:       image.Key,
-		CreatedAt: image.CreatedAt,
-		User:      userModel,
+		Uuid:        image.Uuid.String(),
+		Link:        image.Link,
+		Key:         image.Key,
+		CreatedAt:   image.CreatedAt,
+		User:        userModel,
+		ContentType: image.ContentType,
 	}
 	if image.Album != nil {
 		imageModel.Album = model.Album{
