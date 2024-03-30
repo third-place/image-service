@@ -103,13 +103,13 @@ paths:
         '404':
           description: |-
             404 response
-  /asset/{uuid}:
+  /asset/{key}:
     get:
       operationId: getAssetV1
       summary: get an asset
       parameters:
         - in: path
-          name: uuid
+          name: key
           required: true
           schema:
             type: string

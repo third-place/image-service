@@ -24,9 +24,16 @@ func (i *ImageRepository) Save(image *entity.Image) {
 
 func (i *ImageRepository) FindByUuid(imageUuid *uuid.UUID) *entity.Image {
 	image := &entity.Image{}
-	i.conn.Preload("User").
-		Table("images").
+	i.conn.Table("images").
 		Where("uuid = ?", imageUuid).
+		First(&image)
+	return image
+}
+
+func (i *ImageRepository) FindByKey(key string) *entity.Image {
+	image := &entity.Image{}
+	i.conn.Table("images").
+		Where("key = ?", key).
 		First(&image)
 	return image
 }

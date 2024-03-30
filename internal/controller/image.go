@@ -6,6 +6,7 @@ import (
 	"github.com/third-place/image-service/internal/model"
 	"github.com/third-place/image-service/internal/service"
 	"github.com/third-place/image-service/internal/util"
+	"log"
 	"net/http"
 	"os"
 )
@@ -85,23 +86,27 @@ func UploadNewProfileImageV1(c *gin.Context) {
 
 // GetAssetV1 - get the image binary
 func GetAssetV1(c *gin.Context) {
-	uuidParam, err := uuid.Parse(c.Param("uuid"))
-	imageModel, err := service.CreateImageService().GetImage(uuidParam)
+	keyParam := c.Param("key")
+	imageModel, err := service.CreateImageService().GetImageFromKey(keyParam)
 	if err != nil {
+		log.Print("image model not found")
 		c.Status(http.StatusNotFound)
 		return
 	}
 	if imageModel.Album.Visibility != model.PUBLIC {
 		session, err := util.GetSession(c)
 		if err != nil {
+			log.Print("not logged in, trying to view private image")
 			c.Status(http.StatusBadRequest)
 			return
 		}
 		if session.User.Uuid != imageModel.User.Uuid {
+			log.Print("not owner, trying to view private image")
 			c.Status(http.StatusForbidden)
 			return
 		}
 	}
+	log.Print("serving static content")
 	r := gin.Default()
 	r.Static("/asset", os.Getenv("IMAGE_DIR"))
 }

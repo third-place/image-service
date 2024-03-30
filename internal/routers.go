@@ -96,7 +96,7 @@ var routes = Routes{
 	{
 		"GetAssetV1",
 		http.MethodGet,
-		"/asset/:uuid",
+		"/asset/:key",
 		controller.GetAssetV1,
 	},
 

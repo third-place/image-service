@@ -105,6 +105,14 @@ func (i *ImageService) GetImage(imageUuid uuid.UUID) (*model.Image, error) {
 	return mapper.GetImageModelFromEntity(imageEntity), nil
 }
 
+func (i *ImageService) GetImageFromKey(key string) (*model.Image, error) {
+	imageEntity := i.imageRepository.FindByKey(key)
+	if imageEntity.ID == 0 {
+		return nil, errors.New("image not found")
+	}
+	return mapper.GetImageModelFromEntity(imageEntity), nil
+}
+
 func (i *ImageService) uploadAndCreateImageEntity(user *entity.User, album *entity.Album, file multipart.File, filename string, filesize int64) *entity.Image {
 	key, contentType, err := i.uploadService.UploadImage(file, filename, filesize)
 	if err != nil {
