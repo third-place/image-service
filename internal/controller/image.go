@@ -124,6 +124,7 @@ func GetAssetV1(c *gin.Context) {
 		return
 	}
 	log.Print(fmt.Sprintf("static image bytes written :: %d", written))
+	c.Status(http.StatusOK)
 }
 
 // GetImageV1 - get an image
