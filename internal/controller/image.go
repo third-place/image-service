@@ -112,10 +112,18 @@ func GetAssetV1(c *gin.Context) {
 	log.Print("serving static asset")
 	file := fmt.Sprintf("%s/%s", os.Getenv("IMAGE_DIR"), imageModel.Key)
 	log.Print(fmt.Sprintf("file -- %s -- %s", file, imageModel.ContentType))
-	stream, _ := os.Open(file)
-	finfo, _ := os.Stat(file)
+	buf, err := os.ReadFile(file)
+	if err != nil {
+		log.Print(err)
+		return
+	}
 	c.Writer.Header().Set("Content-Type", imageModel.ContentType)
-	c.DataFromReader(http.StatusOK, finfo.Size(), imageModel.ContentType, stream, map[string]string{})
+	written, err := c.Writer.Write(buf)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	log.Print(fmt.Sprintf("static image bytes written :: %d", written))
 }
 
 // GetImageV1 - get an image
