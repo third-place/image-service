@@ -10,9 +10,12 @@ service:
       - /album/*
       - /album/*/image
       - /image/*
-#      - /album/livestream
-#      - /album/profile
-      - /albums/* # probably refactor
+      - /album/livestream
+      - /album/profile
+      - /image
+      - /asset
+      - /assets
+      - /albums/*
       - /asset/*
       - /assets/*
   env:
