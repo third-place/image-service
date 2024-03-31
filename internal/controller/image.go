@@ -111,6 +111,7 @@ func GetAssetV1(c *gin.Context) {
 	}
 	log.Print("serving static asset")
 	file := fmt.Sprintf("%s/%s", os.Getenv("IMAGE_DIR"), imageModel.Key)
+	log.Print(fmt.Sprintf("file -- %s -- %s", file, imageModel.ContentType))
 	stream, _ := os.Open(file)
 	finfo, _ := os.Stat(file)
 	c.Writer.Header().Set("Content-Type", imageModel.ContentType)
