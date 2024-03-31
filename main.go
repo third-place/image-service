@@ -46,7 +46,8 @@ func serveHttp() {
 	router := internal.NewRouter()
 	handler := cors.AllowAll().Handler(router)
 	port := getServicePort()
+	router.Static("/assets", os.Getenv("IMAGE_DIR"))
 	log.Printf("listening on %d", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port),
-		middleware.FileSizeLimit(middleware.ContentTypeMiddleware(handler))))
+		middleware.FileSizeLimit(handler)))
 }
