@@ -87,31 +87,24 @@ func UploadNewProfileImageV1(c *gin.Context) {
 
 // GetAssetV1 - get the image binary
 func GetAssetV1(c *gin.Context) {
-	log.Print("GetAssetV1")
 	keyParam := c.Param("key")
-	log.Print(keyParam)
 	imageModel, err := service.CreateImageService().GetImageFromKey(keyParam)
 	if err != nil {
-		log.Print("image model not found")
 		c.Status(http.StatusNotFound)
 		return
 	}
 	if imageModel.Album.Visibility != model.PUBLIC {
 		session, err := util.GetSession(c)
 		if err != nil {
-			log.Print("not logged in, trying to view private image")
 			c.Status(http.StatusBadRequest)
 			return
 		}
 		if session.User.Uuid != imageModel.User.Uuid {
-			log.Print("not owner, trying to view private image")
 			c.Status(http.StatusForbidden)
 			return
 		}
 	}
-	log.Print("serving static asset")
 	file := fmt.Sprintf("%s/%s", os.Getenv("IMAGE_DIR"), imageModel.Key)
-	log.Print(fmt.Sprintf("file -- %s -- %s", file, imageModel.ContentType))
 	buf, err := os.ReadFile(file)
 	if err != nil {
 		log.Print(err)
@@ -119,27 +112,21 @@ func GetAssetV1(c *gin.Context) {
 	}
 	c.Status(http.StatusOK)
 	c.Writer.Header().Set("Content-Type", imageModel.ContentType)
-	written, err := c.Writer.Write(buf)
+	_, err = c.Writer.Write(buf)
 	if err != nil {
 		log.Print(err)
 		return
 	}
-	log.Print(fmt.Sprintf("static image bytes written :: %d", written))
 }
 
 // GetImageV1 - get an image
 func GetImageV1(c *gin.Context) {
-	log.Print("GetImageV1")
 	uuidParam, err := uuid.Parse(c.Param("uuid"))
-	log.Print(uuidParam.String())
 	imageModel, err := service.CreateImageService().GetImage(uuidParam)
-	log.Print(imageModel.Uuid)
 	if err != nil {
-		log.Print(fmt.Sprintf("image not found -- %s", uuidParam))
 		c.Status(http.StatusNotFound)
 		return
 	}
-	log.Print("ok!")
 	c.JSON(http.StatusOK, imageModel)
 }
 
