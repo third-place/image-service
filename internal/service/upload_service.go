@@ -51,6 +51,10 @@ func (l *LocalFSUploadService) UploadImage(file multipart.File, filename string,
 	if err != nil {
 		return
 	}
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		return
+	}
 	contentType, err = mimetype.DetectReader(file)
 	return
 }
