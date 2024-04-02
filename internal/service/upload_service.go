@@ -47,11 +47,11 @@ func (l *LocalFSUploadService) UploadImage(file multipart.File, filename string,
 		log.Println("error creating file", err)
 		return
 	}
-	contentType, err = mimetype.DetectReader(file)
+	_, err = io.Copy(dst, file)
 	if err != nil {
 		return
 	}
-	_, err = io.Copy(dst, file)
+	contentType, err = mimetype.DetectReader(file)
 	return
 }
 
