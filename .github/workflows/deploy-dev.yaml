@@ -12,6 +12,7 @@ jobs:
     with:
       name: image-service
       directory: .
+      file: Dockerfile.service
   publish-consumer-image:
     needs: run-tests
     uses: third-place/actions/.github/workflows/publish-docker-image.yaml@main
