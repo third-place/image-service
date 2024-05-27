@@ -5,17 +5,32 @@ on:
 jobs:
   run-tests:
     uses: third-place/actions/.github/workflows/run-go-tests.yaml@main
-  publish-docker-image:
+  publish-service-image:
     needs: run-tests
     uses: third-place/actions/.github/workflows/publish-docker-image.yaml@main
     secrets: inherit
     with:
       name: image-service
       directory: .
+  publish-consumer-image:
+    needs: run-tests
+    uses: third-place/actions/.github/workflows/publish-docker-image.yaml@main
+    secrets: inherit
+    with:
+      name: image-service-consumer
+      directory: .
+      dockerfile: Dockerfile.consumer
   deploy-service:
     needs: publish-docker-image
     uses: third-place/actions/.github/workflows/deploy-env.yaml@main
     secrets: inherit
     with:
       name: image-service
+      env: dev
+  deploy-consumer:
+    needs: publish-consumer-image
+    uses: third-place/actions/.github/workflows/deploy-env.yaml@main
+    secrets: inherit
+    with:
+      name: image-service-consumer
       env: dev
