@@ -21,7 +21,7 @@ jobs:
       directory: .
       dockerfile: Dockerfile.consumer
   deploy-service:
-    needs: publish-docker-image
+    needs: publish-service-image
     uses: third-place/actions/.github/workflows/deploy-env.yaml@main
     secrets: inherit
     with:
